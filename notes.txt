@@ -1,0 +1,20 @@
+// First, you need to install npm in the terminal in the directory you're in AS LONG AS A PACKAGE.JSON EXISTS AT THAT LEVEL.
+This adds package-lock.json and node_modules
+In the terminal:
+-> install npm
+
+
+If it's messed up, use rm-rf to remove and re-install
+
+We don't open index.html from the terminal or use liveserver to see our webpage anymore, we start npm
+then type npm start into your terminal
+hold down the command key and click on 
+Home
+  http://localhost:3000
+to access the live ui of your maxItemsComputed
+
+To add info to the page:
+Define the request url in main.js (or script.js)
+const url = '
+
+stop the server by ctrl + c
