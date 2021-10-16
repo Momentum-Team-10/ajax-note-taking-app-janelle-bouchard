@@ -11,6 +11,11 @@ const url = 'http://localhost:3000'
 // Goal capabilities: Create/edit/delete notes 
 // Page Composition: Header, form -> input box, create button, edit button/icon, delete button/icon, notes list w/ attributes
 // Note Composition: Title, text, date/time created, date/time of most recently updated
+// Functions: 
+// - When you click the "create" button on the form (eventListener), it should add (function called "renderNote") the new note to the notes list, with all of its attributes, and appended edit/delete icons.  It should store all fo the info entered as the title and the note, AND it should store the date/time it was created.
+// - When you click the "edit" icon, it should grab the current text and replace the <p> with an input box(?) that contains the text for you to edit, and a new button called "submit"(?)
+
+
 
 // Define the root div
 let root = document.getElementById('root')
@@ -24,19 +29,107 @@ form.id = 'notes-form'
 // )
 root.appendChild(form)
 
-// create a div w/ input box and create button
+// create a div w/ input boxes for title/note and create submit button 
 let newNoteDiv = document.createElement('div')
+
+let newNoteTitle = document.createElement('div')
+let noteTitleLabel = document.createElement('label')
+noteTitleLabel.innerText = "Subject"
+noteTitleLabel.classList.add("h1")
+let noteTitle = document.createElement('input')
+noteTitle.id = 'note-title'
+noteTitle.placeholder = "Title your note here..."
+newNoteTitle.appendChild(noteTitleLabel)
+newNoteTitle.appendChild(noteTitle)
+
+let newNoteText = document.createElement('div')
+let noteTextLabel = document.createElement('label')
+noteTextLabel.innerText = "Note"
+noteTextLabel.classList.add("h1")
 let noteText = document.createElement('input')
+noteText.id = 'note-text'
+noteText.placeholder = "Add your note here..."
+newNoteText.appendChild(noteTextLabel)
+newNoteText.appendChild(noteText)
+
 let addButton = document.createElement('button')
 addButton.innerText = "Add Note!"
+addButton.id = 'submit'
 
-newNoteDiv.appendChild(noteText)
+newNoteDiv.appendChild(newNoteTitle)
+newNoteDiv.appendChild(newNoteText)
 newNoteDiv.appendChild(addButton)
 form.appendChild(newNoteDiv)
 
+// create an element for the page and give it the id of "notes-list", to create a space for your list of notes
+let notesList = document.createElement('div')
+root.appendChild(notesList)
 
-// // create an element for the page and give it the id of "todo-list"
-let notesList = document.getElementById('notes-list')
+// Create a function that calls other functions (to add the note to the page and the database,) once the submit button is clicked
+
+
+// Create a function (to be used in the next function) that formats the submitted notes on the page, and adds the edit/delete icons
+function renderNoteText(li, noteObj) {
+    // Add the necessary html & elements for each note section using template literals
+    // Add styling/class with the span tag. Example:  <span class="dib w-60">${todoObj.body}</span>
+    // Use the moment library to add the date/time the note was updated, IF applicable
+    // Use 
+    li.innerHTML = `
+    <span>${noteObj.body}</span>${noteObj.updated_at ? moment(noteObj.updated_at).format('MMM DD, YYYY') : ""}
+    <i class="red fa-solid fa-trash-can delete"></i> <i class="orange fa-solid fa-wand-magic-sparkles edit"></i>
+    `
+}
+
+// Create a function to populate the notes on the page once the form is submitted
+function renderNoteItem(noteObj) {
+    // Create an li to hold the body of the note
+    const li = document.createElement('li')
+    // make the id of the li element the id of my note object
+    li.id = noteObj.id
+    // Determine the class/style of the li
+    // li.classList.add(
+    //     'li',
+    // )
+
+    // Call the function that renders the note text style onto the page
+    renderNoteText(li, noteObj)
+    // Append the li to the notes list
+    notesList.appendChild(li)
+}
+
+// ----------------
+// /* Event listeners */
+
+// // Have form element listen for a submit event
+// // Once submit event is triggered, render my newly created todo item on the DOM
+// form.addEventListener('submit', (e) => {
+//     e.preventDefault()
+//     // const todoText = document.getElementById('todo-text').value
+//     // console.log(todoText)
+//     // createTodo(todoText)
+//     // Clear form after a todo has been created
+//     form.reset()
+// })
+
+
+// // Add event lisenters to the 'x' and pencil 
+// // icons in my UI
+// todoList.addEventListener('click', (e) => {
+
+//     // delete todo if I click on the 'x' icon
+//     if (e.target.classList.contains('delete')) {
+//         console.log('todo deleted!')
+//         deleteTodo(e.target)
+//     }
+
+//     // delete todo if I click on the pencil icon
+//     if (e.target.classList.contains('edit')) {
+//         console.log('editing todo')
+//         updateTodo(e.target)
+//     }
+
+// })
+// ----------------
 
 
 // // create an event listener on the form to listen for clicking the submit button to add a new todo item
@@ -50,9 +143,6 @@ let notesList = document.getElementById('notes-list')
 // // reset the form after the todo item has been added so that it clears and you can add another
 // form.reset
 // })
-
-
-
 
 // // This holds the get request for the todos that already exist in the database
 // function listTodos() {
