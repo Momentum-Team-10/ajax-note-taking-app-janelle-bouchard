@@ -4,7 +4,7 @@
 console.log('Hello, World!')
 
 // Identify the api url and define it as a variable:
-const url = 'http://localhost:3000'
+const url = 'http://localhost:3000/notes'
 
 
 // Objective: Note-taking app that displays a list of all current notes
@@ -64,6 +64,8 @@ form.appendChild(newNoteDiv)
 // create an element for the page and give it the id of "notes-list", to create a space for your list of notes
 let notesList = document.createElement('div')
 root.appendChild(notesList)
+const noteCard = document.createElement('div')
+
 
 // Create a function (to be used in the next function) that formats the submitted notes on the page, and adds the edit/delete icons
 function renderNoteText(noteCard, noteObj) {
@@ -80,7 +82,7 @@ function renderNoteText(noteCard, noteObj) {
 // Create a function to populate the notes on the page once the form is submitted
 function renderNoteItem(noteObj) {
     // Create a div to hold the body of the note
-    const noteCard = document.createElement('div')
+    // const noteCard = document.createElement('div')
     // make the id of the noteCard element the id of my note object
     noteCard.id = noteObj.id
     // Determine the class/style of the li
@@ -100,13 +102,13 @@ function createNote(noteTitle, noteText) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            title: noteTitle,
-            body: noteText,
+            title: noteTitle.value,
+            body: noteText.value,
             created_at: moment().format()
         })
     })
     .then(res => res.json())
-    .then(data => renderNoteItem(data))
+    .then(notes => renderNoteItem(notes))
 }
 
 // Create a function that calls other functions (to add the note to the page and the database,) once the submit button is clicked
@@ -117,6 +119,38 @@ form.addEventListener('submit', (e) => {
     createNote(noteTitle, noteText)
     form.reset()
 })
+
+// Call the function to list any existing notes
+listNotes()
+
+// Create a function that retrieves all of the notes in the db
+function listNotes() {
+    fetch(url)
+        .then(res => res.json())
+        .then(notes => {
+            // console.log(note)
+            for (let note of notes) {
+                renderNoteItem(note)
+            }
+        })
+}
+
+// Create a function to delete notes from the page and the database, based on the item's unique ID
+function deleteNote(noteCard) {
+    fetch(url + '/' + `{noteCard.id}`, {
+        method: 'DELETE'
+    }).then(() => noteCard.remove())
+}
+
+// Create a function that uses the delete and edit icons in the ui to delete or edit a note
+noteCard.addEventListener('click', (e) => {
+    // delete the note if I click the trashcan
+    if (e.target.classList.contains('delete')) {
+        console.log('note deleted!')
+        deleteNote(e.target)
+    }
+})
+
 
 
 // ----------------
