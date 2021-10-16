@@ -65,37 +65,59 @@ form.appendChild(newNoteDiv)
 let notesList = document.createElement('div')
 root.appendChild(notesList)
 
-// Create a function that calls other functions (to add the note to the page and the database,) once the submit button is clicked
-
-
 // Create a function (to be used in the next function) that formats the submitted notes on the page, and adds the edit/delete icons
-function renderNoteText(li, noteObj) {
+function renderNoteText(noteCard, noteObj) {
     // Add the necessary html & elements for each note section using template literals
     // Add styling/class with the span tag. Example:  <span class="dib w-60">${todoObj.body}</span>
     // Use the moment library to add the date/time the note was updated, IF applicable
-    // Use 
-    li.innerHTML = `
-    <span>${noteObj.body}</span>${noteObj.updated_at ? moment(noteObj.updated_at).format('MMM DD, YYYY') : ""}
+    // Use fontawesome icons to be implemented as the delete/edit buttons
+    noteCard.innerHTML = `
+    <span>${noteObj.title}</span><span>${noteObj.body}</span>${noteObj.updated_at ? moment(noteObj.updated_at).format('MMM DD, YYYY') : ""}
     <i class="red fa-solid fa-trash-can delete"></i> <i class="orange fa-solid fa-wand-magic-sparkles edit"></i>
     `
 }
 
 // Create a function to populate the notes on the page once the form is submitted
 function renderNoteItem(noteObj) {
-    // Create an li to hold the body of the note
-    const li = document.createElement('li')
-    // make the id of the li element the id of my note object
-    li.id = noteObj.id
+    // Create a div to hold the body of the note
+    const noteCard = document.createElement('div')
+    // make the id of the noteCard element the id of my note object
+    noteCard.id = noteObj.id
     // Determine the class/style of the li
-    // li.classList.add(
-    //     'li',
+    // noteCard.classList.add(
+    //     '',
     // )
 
     // Call the function that renders the note text style onto the page
-    renderNoteText(li, noteObj)
-    // Append the li to the notes list
-    notesList.appendChild(li)
+    renderNoteText(noteCard, noteObj)
+    // Append the noteCard div to the notes list
+    notesList.appendChild(noteCard)
 }
+
+// Create a function that adds the notes to the database once they're created with a POST request
+function createNote(noteTitle, noteText) {
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            title: noteTitle,
+            body: noteText,
+            created_at: moment().format()
+        })
+    })
+    .then(res => res.json())
+    .then(data => renderNoteItem(data))
+}
+
+// Create a function that calls other functions (to add the note to the page and the database,) once the submit button is clicked
+form.addEventListener('submit', (e) => {
+    e.preventDefault()
+    document.getElementById('note-title').value
+    document.getElementById('note-text').value
+    createNote(noteTitle, noteText)
+    form.reset()
+})
+
 
 // ----------------
 // /* Event listeners */
