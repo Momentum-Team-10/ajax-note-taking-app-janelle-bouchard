@@ -63,8 +63,8 @@ form.appendChild(newNoteDiv)
 
 // create an element for the page and give it the id of "notes-list", to create a space for your list of notes
 let notesList = document.createElement('div')
+// const noteCard = document.createElement('div')
 root.appendChild(notesList)
-const noteCard = document.createElement('div')
 
 
 // Create a function (to be used in the next function) that formats the submitted notes on the page, and adds the edit/delete icons
@@ -74,21 +74,29 @@ function renderNoteText(noteCard, noteObj) {
     // Use the moment library to add the date/time the note was updated, IF applicable
     // Use fontawesome icons to be implemented as the delete/edit buttons
     noteCard.innerHTML = `
-    <span>${noteObj.title}</span><span>${noteObj.body}</span>${noteObj.updated_at ? moment(noteObj.updated_at).format('MMM DD, YYYY') : ""}
-    <i class="red fa-solid fa-trash-can delete"></i> <i class="orange fa-solid fa-wand-magic-sparkles edit"></i>
+    <span class="dib w-60">${noteObj.title}</span><span>${noteObj.body}</span>${noteObj.updated_at ? moment(noteObj.updated_at).format('MMM DD, YYYY') : ""
+    }<i class="fa-solid fas fa-trash-can delete"></i><i class="fa-solid fa-pen edit"></i>
     `
 }
 
 // Create a function to populate the notes on the page once the form is submitted
 function renderNoteItem(noteObj) {
     // Create a div to hold the body of the note
-    // const noteCard = document.createElement('div')
+    const noteCard = document.createElement('div')
     // make the id of the noteCard element the id of my note object
     noteCard.id = noteObj.id
     // Determine the class/style of the li
-    // noteCard.classList.add(
-    //     '',
-    // )
+    noteCard.classList.add(
+        // These strings are TACHYONS class names
+        'lh-copy',
+        'pv3',
+        'ba',
+        'bl-0',
+        'bt-0',
+        'br-0',
+        'b--dotted',
+        'b--black-3'
+    )
 
     // Call the function that renders the note text style onto the page
     renderNoteText(noteCard, noteObj)
@@ -102,6 +110,7 @@ function createNote(noteTitle, noteText) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+            id: noteCard.id.value,
             title: noteTitle.value,
             body: noteText.value,
             created_at: moment().format()
@@ -120,36 +129,39 @@ form.addEventListener('submit', (e) => {
     form.reset()
 })
 
-// Call the function to list any existing notes
-listNotes()
+
 
 // Create a function that retrieves all of the notes in the db
 function listNotes() {
     fetch(url)
         .then(res => res.json())
         .then(notes => {
-            // console.log(note)
+            console.log(notes)
             for (let note of notes) {
                 renderNoteItem(note)
             }
         })
 }
 
-// Create a function to delete notes from the page and the database, based on the item's unique ID
-function deleteNote(noteCard) {
-    fetch(url + '/' + `{noteCard.id}`, {
-        method: 'DELETE'
-    }).then(() => noteCard.remove())
-}
+// Call the function to list any existing notes
+listNotes()
 
 // Create a function that uses the delete and edit icons in the ui to delete or edit a note
-noteCard.addEventListener('click', (e) => {
+notesList.addEventListener('click', (e) => {
     // delete the note if I click the trashcan
     if (e.target.classList.contains('delete')) {
-        console.log('note deleted!')
+        // console.log('note deleted!')
         deleteNote(e.target)
     }
 })
+
+// Create a function to delete notes from the page and the database, based on the item's unique ID
+function deleteNote(noteEl) {
+    fetch(url + '/' + `{noteEl.parentElement.id}`, {
+        method: "DELETE",
+        headers: { 'Content-Type': 'application/json' }
+    }).then(() => noteEl.parentElement.remove())
+}
 
 
 
